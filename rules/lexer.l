@@ -27,6 +27,10 @@ std::string Multi_line_strlit;
   exit(EXIT_FAILURE);
 }
 
+#ifdef DUMP_JSON
+  void dump_tokens();
+#endif
+
 %}
 
 /* Conditinons. */
@@ -161,19 +165,7 @@ int main() {
   yylex();
   
   #ifdef DUMP_JSON 
-
-    std::cout << "{\"tokens\":[";
-
-    for (unsigned long ind = 0; ind < Tokens_parsed.size(); ++ind) {
-      
-      std::cout << *Tokens_parsed[ind];
-      if (ind != Tokens_parsed.size() - 1) {
-        std::cout << ',';
-      }
-    }
-
-    std::cout << "]}";
-
+    dump_tokens();
   #endif
 
   return 0;
