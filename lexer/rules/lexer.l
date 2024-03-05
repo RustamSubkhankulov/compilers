@@ -1,25 +1,47 @@
 /* Options. */
-%option noyywrap nounput noinput
+%option noyywrap nounput
 
 /* Includes. */
 %top {
   #include <iostream>
   #include <vector>
   #include <memory>
+  #include <string>
+  #include <cctype>
   #include "lexer.hpp"
 }
 
 /* Definitions. */
 %{
+
 using namespace Lexer;
-std::vector<std::unique_ptr<Token>> tokens_parsed;
+
+std::vector<std::unique_ptr<Token>> Tokens_parsed;
+std::string Multi_line_strlit;
+
+#define ADD_TOKEN(TYPE, ARG) Tokens_parsed.push_back(std::make_unique<TYPE>(ARG))
+
+[[noreturn]] void lexical_error(const std::string& token, const std::string& what = "Lexical error") {
+  
+  std::cerr << what << " at line " << yylineno << ": |" << token << "|\n";
+  exit(EXIT_FAILURE);
+}
+
 %}
+
+/* Conditinons. */
+
+/* Currently parsing multi-line comment. */
+%x MULTI_LINE_COMMENT
+
+/* Currently parsing string literal. */
+%x STRLIT
 
 /* Categories. */
 
 DIGIT0  [0-9]
 DIGIT1  [1-9]
-ALPHA   [A-z]|[a-z]
+ALPHA   [A-Z]|[a-z]
 
 DECINT  {DIGIT0}|({DIGIT1}{DIGIT0}*)
 NUMINT  [-+]?{DECINT}
@@ -30,27 +52,95 @@ NUMFLT  [-+]?{DECFLT}
 NAME    {ALPHA}({ALPHA}|{DECINT})*
 ID      ((\$|NAME)_)?NAME
 
+ESCAPED (\\a)|(\\b)|(\\f)|(\\n)|(\\r)|(\\t)|(\\v)|(\\\\)|(\\\')|(\\\")
+
 /* Rules section. */
 %%
 
-{NUMINT}      {
-                tokens_parsed.push_back(std::make_unique<Token_num<int>>(std::stoi(yytext))); 
-              }
+(?i:if)       ADD_TOKEN(Token_kword, Token_kword::IF);
+(?i:not)      ADD_TOKEN(Token_kword, Token_kword::NOT);
+(?i:else)     ADD_TOKEN(Token_kword, Token_kword::ELSE);
+(?i:loop)     ADD_TOKEN(Token_kword, Token_kword::LOOP);
+(?i:then)     ADD_TOKEN(Token_kword, Token_kword::THEN);
+(?i:while)    ADD_TOKEN(Token_kword, Token_kword::WHILE);
+(?i:print)    ADD_TOKEN(Token_kword, Token_kword::PRINT);
+(?i:println)  ADD_TOKEN(Token_kword, Token_kword::PRINTLN);
 
-{NUMFLT}      {
-                tokens_parsed.push_back(std::make_unique<Token_num<float>>(std::stof(yytext))); 
-              }
+t(?i:rue)     ADD_TOKEN(Token_kword, Token_kword::TRUE);
+f(?i:alse)    ADD_TOKEN(Token_kword, Token_kword::FALSE);
 
-{NAME}        {
-                tokens_parsed.push_back(std::make_unique<Token_var_id>(yytext));
-              }
+{NUMINT}      ADD_TOKEN(Token_num<int>, std::stoi(yytext));
+{NUMFLT}      ADD_TOKEN(Token_num<float>, std::stof(yytext)); 
 
-[[:space:]]+  // skip whitespace
+{NAME}        ADD_TOKEN(Token_var_id, yytext);
 
-[[:^space:]]+ { 
-                std::cerr << "ERROR: " << yytext << std::endl;
-                exit(EXIT_FAILURE); 
-              }
+\+            ADD_TOKEN(Token_oper, Token_oper::ADD);
+\-            ADD_TOKEN(Token_oper, Token_oper::SUB);
+\/            ADD_TOKEN(Token_oper, Token_oper::DIV);
+\*            ADD_TOKEN(Token_oper, Token_oper::MUL);
+\=            ADD_TOKEN(Token_oper, Token_oper::ASS);
+\&            ADD_TOKEN(Token_oper, Token_oper::AND);
+\^            ADD_TOKEN(Token_oper, Token_oper::XOR);
+\~            ADD_TOKEN(Token_oper, Token_oper::NEG);
+\|            ADD_TOKEN(Token_oper, Token_oper::OR);
+
+\(            ADD_TOKEN(Token_punct, Token_punct::OPENING_BR);
+\)            ADD_TOKEN(Token_punct, Token_punct::CLOSING_BR);
+
+--.*        { }
+
+<INITIAL>\" BEGIN(STRLIT);
+
+<STRLIT>\\ {
+  
+  int sym = yyinput();
+  if (sym == 'a' || sym == 'b' || sym == 'f'  || sym == 'n'  || sym == 'r'
+   || sym == 't' || sym == 'v' || sym == '\\' || sym == '\'' || sym == '\"') {
+    
+    Multi_line_strlit.push_back('\\');
+    Multi_line_strlit.push_back(sym);
+
+  } else {
+
+    while (sym != '\n') {
+
+      if (sym == 0) {
+        lexical_error(yytext, "Unclosed multi-line string literal");
+      }
+
+      if (sym != ' ' && sym != '\t' && sym != '\r') {
+        lexical_error(yytext, "Invalid multi-line string literal");
+      }
+
+      sym = yyinput();
+    }
+  }
+}
+
+<STRLIT>\n {
+  lexical_error(yytext, "Split multi-line string literal");
+}
+
+<STRLIT>[^\\\"] Multi_line_strlit.append(yytext);
+
+<STRLIT>\" {
+  ADD_TOKEN(Token_str, Multi_line_strlit);
+  Multi_line_strlit.clear();
+  BEGIN(INITIAL);
+}
+
+<INITIAL>\/\* BEGIN(MULTI_LINE_COMMENT);
+
+<MULTI_LINE_COMMENT>.|\n { /*  Skip skip skip. */ }
+
+<MULTI_LINE_COMMENT><<EOF>> {
+  lexical_error(yytext, "Unclosed multi-line comment.");
+}
+
+<MULTI_LINE_COMMENT>\*\/ BEGIN(INITIAL);
+
+[[:space:]]+
+.|\n lexical_error(yytext);
 
 %%
 
@@ -62,7 +152,7 @@ int main() {
   
   std::cout << std::endl;
 
-  for (const auto& token_ptr : tokens_parsed) {
+  for (const auto& token_ptr : Tokens_parsed) {
     std::cout << *token_ptr << std::endl;
   }
 

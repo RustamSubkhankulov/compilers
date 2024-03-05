@@ -5,6 +5,7 @@
 #include <string>
 #include <iostream>
 #include <typeinfo>
+#include <iomanip>
 
 namespace Lexer {
 
@@ -45,7 +46,8 @@ public:
 template<typename CharT>
 std::basic_ostream<CharT>& operator<<(std::basic_ostream<CharT>& os, const Token& token) {
 
-  os << "Token class: " << token.class_str() << " Token value: " << token.value_str() << std::endl;
+  os << "Token class:" << std::left << std::setw(7) << token.class_str() << " "
+     << "Token value:" << token.value_str();
   return os;
 }
 
@@ -56,7 +58,7 @@ class Token_kword : public Token {
 public:
 
   enum Value {
-    ELSE, FALSE, IF, LOOP, THEN, WHILE, NOT, TRUE, PRINT, PRINTLN
+    TRUE, FALSE, ELSE, IF, LOOP, THEN, WHILE, NOT, PRINT, PRINTLN
   };
 
 private:
@@ -184,7 +186,7 @@ private:
 public:
 
   Token_str(std::string value):
-    Token(Token_class::VAR_ID),
+    Token(Token_class::STR),
     value_(value) {}
 
   std::string class_str() const override {
@@ -203,7 +205,7 @@ class Token_oper : public Token {
 public:
 
   enum Value {
-    ADD, SUB, MUL, DIV
+    ADD, SUB, MUL, DIV, ASS, AND, OR, XOR, NEG
   };
 
 private:
@@ -213,7 +215,7 @@ private:
 public:
 
   Token_oper(Value value):
-    Token(Token_class::TYPE_ID),
+    Token(Token_class::OPER),
     value_(value) {}
 
   std::string class_str() const override {
@@ -227,6 +229,11 @@ public:
       case Value::SUB: return "ADD";
       case Value::MUL: return "MUL";
       case Value::DIV: return "DIV";
+      case Value::ASS: return "ASS";
+      case Value::NEG: return "NEG";
+      case Value::AND: return "AND";
+      case Value::XOR: return "XOR";
+      case Value::OR:  return "OR";
       default: exit(EXIT_FAILURE);
     }
   }
