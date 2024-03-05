@@ -46,8 +46,7 @@ public:
 template<typename CharT>
 std::basic_ostream<CharT>& operator<<(std::basic_ostream<CharT>& os, const Token& token) {
 
-  os << "Token class:" << std::left << std::setw(7) << token.class_str() << " "
-     << "Token value:" << token.value_str();
+  os << "{\"class\":\"" << token.class_str() << "\",\"value\":\"" << token.value_str() << "\"}";
   return os;
 }
 

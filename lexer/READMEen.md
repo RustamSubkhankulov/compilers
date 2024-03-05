@@ -1,4 +1,4 @@
-# HW1: Lexical analysis
+# Lexical analyzer
 
 Note: see README.md for russian version of this document.
 Warning: this document is automatically translated, therefore mistakes are possible.
@@ -30,7 +30,7 @@ other letters can be in upper or lower case.
 This assignment asks you to write Flex rules to allow
 **Yazik++** language tokens.
 
-### 6. Structure
+### 4. Structure
 - *examples* - see paragraph **use**
 - *rules* - contains rules for building a lexical analyzer
 - *inc* - headers required for the lexer to work
@@ -40,9 +40,16 @@ This assignment asks you to write Flex rules to allow
 #### Assembly
 To build the project, you need the CMake build system version 3.21 and higher, as well as the *flex* lexical analyzer generation utility installed.
 To build the project, use the following commands:
-- <code>cmake -B build</code>
+- <code>cmake -B build -DDUMP_JSON=ON</code>
 - <code>cmake --build build --target lexer</code>
+
+The **DUMP_JSON** option enables output of lexer results in JSON format.
 
 #### Usage
 To test the operation of the analyzer, a directory *examples* has been prepared, containing an example program in the **Yazik++** language, intended to demonstrate the operation of the lexer.
 To use the parser, run the executable file from the *build* directory and provide the program text or a pre-prepared program from *examples* as input.
+
+### 6. Testing
+To test the operation of the lexer, a *python script has been prepared that uses the output of the analyzer and pre-prepared token options in JSON format in **tests/test_data.json** in order to compare the result of the work with the expected class and value of the tokens.
+To start testing, you can use the following command (after building the project):
+<code>./scripts/etoe.py build/lexer tests/test_data.json</code>.

@@ -34,3 +34,8 @@ add_executable(${PROJECT_NAME}
   )
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${INC_DIR})
+
+option(DUMP_JSON "Make lexer dump parsed tokens in json format" OFF)
+if (DUMP_JSON)
+  target_compile_definitions(${PROJECT_NAME} PRIVATE -DDUMP_JSON)
+endif()

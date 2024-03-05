@@ -160,11 +160,21 @@ int main() {
 
   yylex();
   
-  std::cout << std::endl;
+  #ifdef DUMP_JSON 
 
-  for (const auto& token_ptr : Tokens_parsed) {
-    std::cout << *token_ptr << std::endl;
-  }
+    std::cout << "{\"tokens\":[";
+
+    for (unsigned long ind = 0; ind < Tokens_parsed.size(); ++ind) {
+      
+      std::cout << *Tokens_parsed[ind];
+      if (ind != Tokens_parsed.size() - 1) {
+        std::cout << ',';
+      }
+    }
+
+    std::cout << "]}";
+
+  #endif
 
   return 0;
 }
