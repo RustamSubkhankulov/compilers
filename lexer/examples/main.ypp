@@ -1,0 +1,12 @@
+-- Example of single line comment
+
+if (true)
+  Struct_number789___ var1337name__hello_world = 688 * 9.0 + ( varvarVar & .9 )
+else 
+  String str = "Hello world" /* Here's comment start
+
+  Still comment.
+  And here's its end. */
+
+  String str_another = "Hello\t\n\r \
+      string end"

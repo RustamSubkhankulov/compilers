@@ -97,19 +97,13 @@ public:
 
 class Token_type_id : public Token {
 
-public:
-
-  enum Value {
-    INT, FLOAT
-  };
-
 private:
 
-  Value value_;
+  std::string value_;
 
 public:
 
-  Token_type_id(Value value):
+  Token_type_id(std::string value):
     Token(Token_class::TYPE_ID),
     value_(value) {}
 
@@ -118,12 +112,7 @@ public:
   }
 
   std::string value_str() const override {
-    
-    switch(value_) {
-      case Value::INT:   return "INT";
-      case Value::FLOAT: return "FLOAT";
-      default: exit(EXIT_FAILURE);
-    }
+    return value_;
   }
 };
 

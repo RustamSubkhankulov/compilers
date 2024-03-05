@@ -41,7 +41,9 @@ std::string Multi_line_strlit;
 
 DIGIT0  [0-9]
 DIGIT1  [1-9]
-ALPHA   [A-Z]|[a-z]
+ALPHALC [a-z]
+ALPHAUC [A-Z]
+ALPHA   {ALPHALC}|{ALPHAUC}
 
 DECINT  {DIGIT0}|({DIGIT1}{DIGIT0}*)
 NUMINT  [-+]?{DECINT}
@@ -49,8 +51,15 @@ NUMINT  [-+]?{DECINT}
 DECFLT  ({DECINT}?[.]{DIGIT0}{0,6})|({DECINT}[.]({DIGIT0}{0,6})?)
 NUMFLT  [-+]?{DECFLT}
 
-NAME    {ALPHA}({ALPHA}|{DECINT})*
-ID      ((\$|NAME)_)?NAME
+NM_TAIL ({ALPHA}|{DECINT})*
+NAMEUC  {ALPHAUC}{NM_TAIL}
+NAMELC  {ALPHALC}{NM_TAIL}
+NAME    {NAMEUC}|{NAMELC}
+
+ID_TAIL (_|{NAME}|{DECINT}|\$)*
+
+VAR_ID  {NAMELC}{ID_TAIL}
+TYPE_ID {NAMEUC}{ID_TAIL}  
 
 ESCAPED (\\a)|(\\b)|(\\f)|(\\n)|(\\r)|(\\t)|(\\v)|(\\\\)|(\\\')|(\\\")
 
@@ -72,7 +81,8 @@ f(?i:alse)    ADD_TOKEN(Token_kword, Token_kword::FALSE);
 {NUMINT}      ADD_TOKEN(Token_num<int>, std::stoi(yytext));
 {NUMFLT}      ADD_TOKEN(Token_num<float>, std::stof(yytext)); 
 
-{NAME}        ADD_TOKEN(Token_var_id, yytext);
+{VAR_ID}      ADD_TOKEN(Token_var_id, yytext);
+{TYPE_ID}     ADD_TOKEN(Token_type_id, yytext);
 
 \+            ADD_TOKEN(Token_oper, Token_oper::ADD);
 \-            ADD_TOKEN(Token_oper, Token_oper::SUB);
