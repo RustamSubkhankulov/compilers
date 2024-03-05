@@ -26,18 +26,16 @@ other letters can be in upper or lower case.
 
 *flex*/*flex++* - a tool for creating scanners. A scanner is a program that recognizes lexical patterns in text. *flex* reads the given input files, or standard input if no file names are specified, to obtain a description of the scanner being created. The description is presented in the form of pairs of regular expressions and C/C++ code, called rules. *flex* generates as output a C source file, defaulting to lex.yy.c, which defines the yylex() function. This file can be compiled and linked with the *flex* runtime library to create an executable file. When the executable runs, it parses the input for regular expressions. Whenever it finds one, it executes the corresponding C/C++ code.
 
-### 3. Assignment
-This assignment asks you to write Flex rules to allow
-**Yazik++** language tokens.
-
-### 4. Structure
+### 3. Structure
 - *examples* - see paragraph **use**
 - *rules* - contains rules for building a lexical analyzer
 - *inc* - headers required for the lexer to work
+- *tests* - json data for testing
+- *scripts* - python-scripts for testing
 
-### 5. Assembly and use
+### 4. Building and use
 
-#### Assembly
+#### Building
 To build the project, you need the CMake build system version 3.21 and higher, as well as the *flex* lexical analyzer generation utility installed.
 To build the project, use the following commands:
 - <code>cmake -B build -DDUMP_JSON=ON</code>
@@ -49,7 +47,7 @@ The **DUMP_JSON** option enables output of lexer results in JSON format.
 To test the operation of the analyzer, a directory *examples* has been prepared, containing an example program in the **Yazik++** language, intended to demonstrate the operation of the lexer.
 To use the parser, run the executable file from the *build* directory and provide the program text or a pre-prepared program from *examples* as input.
 
-### 6. Testing
+### 5. Testing
 To test the operation of the lexer, a *python script has been prepared that uses the output of the analyzer and pre-prepared token options in JSON format in **tests/test_data.json** in order to compare the result of the work with the expected class and value of the tokens.
 To start testing, you can use the following command (after building the project):
 <code>./scripts/etoe.py build/lexer tests/test_data.json</code>.
