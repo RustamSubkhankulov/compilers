@@ -25,10 +25,7 @@ set(INC_DIR inc)
 find_package(FLEX REQUIRED)
 FLEX_TARGET(lexer ${CMAKE_SOURCE_DIR}/rules/lexer.l ${CMAKE_CURRENT_BINARY_DIR}/lexer.cpp)
 
-option(DUMP_JSON "Make lexer dump parsed tokens in json format" OFF)
-if (DUMP_JSON)
-  set(SOURCES ${SRC_DIR}/dump.cpp)
-endif()
+file(GLOB SOURCES CONFIGURE_DEPENDS ${SRC_DIR}/*.cpp)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 add_executable(${PROJECT_NAME} 
@@ -38,6 +35,7 @@ add_executable(${PROJECT_NAME}
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${INC_DIR})
 
+option(DUMP_JSON "Make lexer dump parsed tokens in json format" OFF)
 if (DUMP_JSON)
   target_compile_definitions(${PROJECT_NAME} PRIVATE -DDUMP_JSON)
 endif()

@@ -6,6 +6,8 @@
 #include <iostream>
 #include <typeinfo>
 #include <iomanip>
+#include <vector>
+#include <memory>
 
 namespace Lexer {
 
@@ -260,6 +262,9 @@ public:
     }
   }
 };
+
+extern std::vector<std::unique_ptr<Token>> Tokens_parsed;
+const std::vector<std::unique_ptr<Token>>& get_tokens();
 
 }; // namespace Lexer
 

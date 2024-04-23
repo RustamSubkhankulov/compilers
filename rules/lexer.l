@@ -16,12 +16,11 @@
 
 using namespace Lexer;
 
-std::vector<std::unique_ptr<Token>> Tokens_parsed;
 std::string Multi_line_strlit;
 
 #define ADD_TOKEN(TYPE, ARG) Tokens_parsed.push_back(std::make_unique<TYPE>(ARG))
 
-[[noreturn]] void lexical_error(const std::string& token, const std::string& what = "Lexical error") {
+[[noreturn]] static void lexical_error(const std::string& token, const std::string& what = "Lexical error") {
   
   std::cerr << what << " at line " << yylineno << ": |" << token << "|\n";
   exit(EXIT_FAILURE);
@@ -157,16 +156,3 @@ f(?i:alse)    ADD_TOKEN(Token_kword, Token_kword::FALSE);
 .|\n lexical_error(yytext);
 
 %%
-
-/* Code section. */
-
-int main() {
-
-  yylex();
-  
-  #ifdef DUMP_JSON 
-    dump_tokens();
-  #endif
-
-  return 0;
-}
