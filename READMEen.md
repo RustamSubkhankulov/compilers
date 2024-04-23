@@ -43,6 +43,9 @@ To build the project, use the following commands:
 
 The **DUMP_JSON** option enables output of lexer results in JSON format.
 
+To install the lexer as a static library for use as part of another project, use the command:
+- <code>cmake --build build --target install DESTDIR=<path to parent project directory></code>code>
+
 #### Usage
 To test the operation of the analyzer, a directory *examples* has been prepared, containing an example program in the **Yazik++** language, intended to demonstrate the operation of the lexer.
 To use the parser, run the executable file from the *build* directory and provide the program text or a pre-prepared program from *examples* as input.

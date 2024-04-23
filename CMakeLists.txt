@@ -39,3 +39,26 @@ option(DUMP_JSON "Make lexer dump parsed tokens in json format" OFF)
 if (DUMP_JSON)
   target_compile_definitions(${PROJECT_NAME} PRIVATE -DDUMP_JSON)
 endif()
+
+#=====<liblexer static library>=====
+
+set(LIB_NAME lib${PROJECT_NAME})
+
+set(LIB_SRC_DIR src)
+set(LIB_INC_DIR inc)
+
+set(LIB_SOURCES ${LIB_SRC_DIR}/lexer.cpp ${FLEX_lexer_OUTPUTS})
+
+add_library(${LIB_NAME} STATIC ${LIB_SOURCES})
+
+target_compile_features(${LIB_NAME} INTERFACE cxx_std_20)
+target_include_directories(${LIB_NAME} PRIVATE ${LIB_INC_DIR})
+set_target_properties(${LIB_NAME} PROPERTIES PUBLIC_HEADER ${LIB_INC_DIR}/lexer.hpp)
+
+set(CMAKE_INSTALL_PREFIX "")
+
+install(
+        TARGETS ${LIB_NAME} 
+        LIBRARY DESTINATION lib/${LIB_NAME}
+        PUBLIC_HEADER DESTINATION inc/${LIB_NAME}
+        )
