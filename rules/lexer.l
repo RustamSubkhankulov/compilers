@@ -81,8 +81,8 @@ ESCAPED (\\a)|(\\b)|(\\f)|(\\n)|(\\r)|(\\t)|(\\v)|(\\\\)|(\\\')|(\\\")
 t(?i:rue)     ADD_TOKEN(Token_kword, Token_kword::TRUE);
 f(?i:alse)    ADD_TOKEN(Token_kword, Token_kword::FALSE);
 
-{NUMINT}      ADD_TOKEN(Token_num<int>, std::stoi(yytext));
-{NUMFLT}      ADD_TOKEN(Token_num<float>, std::stof(yytext)); 
+{NUMINT}      ADD_TOKEN(Token_numint, std::stoi(yytext));
+{NUMFLT}      ADD_TOKEN(Token_numflt, std::stof(yytext)); 
 
 {VAR_ID}      ADD_TOKEN(Token_var_id, yytext);
 {TYPE_ID}     ADD_TOKEN(Token_type_id, yytext);
